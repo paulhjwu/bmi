@@ -13,10 +13,23 @@ import math
 bmi = Blueprint('bmi', __name__)
 
 class BMI(db.Document):
+    
     meta = {'collection': 'readings'}
     name = db.StringField(max_length=30)
     date = db.DateTimeField()
+    weight = db.FloatField()
+    height = db.FloatField()
     bmi = db.FloatField()
+    
+    def computeBMI(self, unit):
+        
+        if unit == 'm':
+            bmi = self.weight / math.pow(self.height, 2)
+        else:
+            bmi = self.weight / math.pow(self.height/100, 2)
+        
+        return bmi
+        
 
 def csv_to_dict(file):
     
@@ -184,6 +197,11 @@ def process():
     weight  = float(request.form['weight'])
     height = float(request.form['height'])
 
+    toDay = datetime.now()
+    aBmi = BMI(name=current_user.name, date=toDay, weight=weight, height=height)
+    aBmi.bmi = aBmi.computeBMI(request.form['unit'])
+    aBmi.save()
+    
     if request.form['unit'] == 'm':
         bmi = weight / math.pow(height, 2)
     else:

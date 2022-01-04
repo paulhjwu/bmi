@@ -6,7 +6,7 @@ from flask_login import login_required, current_user
 
 # Register Blueprint so we can factor routes
 from auth import auth
-from bmi import bmi, csv_to_dict, storeReadings
+from bmi import bmi, getDictFromCSV, storeReadings
 from dashboard import dashboard
 
 # register blueprint from respective module
@@ -40,7 +40,7 @@ def upload():
             print("No create Action yet")
         elif type == 'upload':
             file = request.files.get('file')
-            listOfDict = csv_to_dict(file)
+            listOfDict = getDictFromCSV(file)
             storeReadings(listOfDict, db)
         return render_template("upload.html", name=current_user.name, panel="Upload")
     

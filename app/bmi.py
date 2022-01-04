@@ -23,7 +23,7 @@ class BMI(db.Document):
             bmi = self.weight / math.pow(self.height/100, 2)
         return bmi
 
-def csv_to_dict(file):
+def getDictFromCSV(file):
     data = file.read().decode('utf-8')
     dict_reader = csv.DictReader(io.StringIO(data), delimiter=',', quotechar='"')
     file.close()
@@ -114,9 +114,6 @@ def chart2():
             #I want to get some data from the service
         return render_template('bmi_chart2.html', name=current_user.name, panel="BMI Chart")    #do nothing but to show index.html
     elif request.method == 'POST':
-        #Get the values passed from the Front-end, do the BMI calculation, return the BMI back to front-end
-        # f1 = open("static/DataSet2.csv", "r")
-        #listOfDict = csv_to_dict(f1)
         dbCursor = dbd.readings.find({})
         readings = {}
         fDate = datetime.now()
@@ -147,16 +144,17 @@ def process():
     height = float(request.form['height'])
 
     today = datetime.now()
-    aBmi = BMI(name=current_user.name, date=today, weight=weight, height=height)
-    aBmi.bmi = aBmi.computeBMI(request.form['unit'])
-    aBmi.save()
+    bmiObject = BMI(name=current_user.name, date=today, weight=weight, height=height)
+    bmiObject.bmi = bmiObject.computeBMI(request.form['unit'])
+    bmiObject.save()
     
+    # why are we recomputing BMI here? should we use computeBMI? 
     if request.form['unit'] == 'm':
-        bmi = weight / math.pow(height, 2)
+        bmiValue = weight / math.pow(height, 2)
     else:
-        bmi = weight / math.pow(height/100, 2)
+        bmiValue = weight / math.pow(height/100, 2)
 
-    return jsonify({'bmi' : bmi})
+    return jsonify({'bmi' : bmiValue})
 
 @bmi.route('/chart')
 def chart():

@@ -52,8 +52,6 @@
                 {% if current_user.is_authenticated %}
                 <div class="col-md-8"> 
                   <ul class="navbar-nav">
-                    <!-- <li class="nav-item icon-parent"><a href="#" class="nav-link icon-bullet"><i class="fas fa-comments text-muted fa-lg"></i></a></li>
-                    <li class="nav-item icon-parent"><a href="#" class="nav-link icon-bullet"><i class="fas fa-bell text-muted fa-lg"></i></a></li> -->
                     <li class="nav-item ml-auto"><a href="#" class="nav-link" data-toggle="modal" data-target="#sign-out"><i class="fas fa-sign-out-alt fa-lg"></i></a></li>
                   </ul>
                 </div>
@@ -79,7 +77,6 @@
             Press logout to leave
           </div>
           <div class="modal-footer">
-            <!-- <a class="btn btn-dander" data-dismiss="modal" href='logout'>Logout</a> -->
             <form action='/logout' method='GET'>
               <button type="button" class="btn btn-success" data-dismiss="modal" >Stay Here</button>
               <button type="submit" class="btn btn-danger"  id="logout">Logout</button>

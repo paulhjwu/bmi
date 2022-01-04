@@ -1,12 +1,8 @@
 from werkzeug.security import generate_password_hash, check_password_hash
-from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
-
-from flask import Blueprint, request, redirect, render_template, url_for, flash
-
+from flask_login import login_user, login_required, logout_user, current_user
+from flask import Blueprint, request, redirect, render_template, url_for
 from forms import RegForm
 from users import User
-
-from dashboard import dashboard
 
 auth = Blueprint('auth', __name__)
 
@@ -44,7 +40,6 @@ def login():
             else:
                 form.email.errors.append("No Such User")
     return render_template('login.html', form=form, panel="Login")
-    # return render_template('login.html')
 
 @auth.route('/logout', methods = ['GET'])
 @login_required

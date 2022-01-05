@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request, jsonify
-from app import db, dbd
-from flask_login import current_user
 from datetime import datetime, timedelta
+from flask_login import current_user
+from app import db, dbd
 
 import csv
 import io
@@ -23,13 +23,13 @@ class BMI(db.Document):
             bmi = self.weight / math.pow(self.height/100, 2)
         return bmi
 
-def getDictFromCSV(file):
+def get_dict_from_csv(file):
     data = file.read().decode('utf-8')
     dict_reader = csv.DictReader(io.StringIO(data), delimiter=',', quotechar='"')
     file.close()
     return(list(dict_reader))
 
-def storeReadings(data, db):
+def insert_reading_data_into_database(data, db):
     readings = {}
     fDate = datetime(3000, 1, 1)
     lDate = datetime(2000, 12, 31)
@@ -52,7 +52,7 @@ def storeReadings(data, db):
         
     dbd.readings.insert_one({"readings": readings, "fDate": fDate, "lDate": lDate})
 
-def dataPrep(readings, bDate, lDate):
+def prepare_chart_dimension_and_label(readings, bDate, lDate):
     chartDim = {}
     labels = []
 
@@ -92,7 +92,7 @@ def dataPrep(readings, bDate, lDate):
 
     return chartDim, labels
 
-def getAverage(db):
+def get_average(db):
     aveDict = {}
     sum=0
     count=0
@@ -108,6 +108,7 @@ def getAverage(db):
 
     return aveDict
 
+# it is possible to use pluggable view
 @bmi.route('/chart2', methods=['GET', 'POST'])
 def chart2():
     if request.method == 'GET':
@@ -125,17 +126,17 @@ def chart2():
 
         chartDim = {}
         labels = []
-        chartDim, labels = dataPrep(readings, fDate, lDate)
+        chartDim, labels = prepare_chart_dimension_and_label(readings, fDate, lDate)
         return jsonify({'chartDim': chartDim, 'labels': labels})
 
 @bmi.route('/chart3', methods=['GET', 'POST'])
 def chart3():
     if request.method == 'GET':
-            #I want to get some data from the service
+        #I want to get some data from the service
         return render_template('bmi_chart3.html', name=current_user.name, panel="BMI Chart")    #do nothing but to show index.html
     elif request.method == 'POST':
         #Get the values passed from the Front-end, do the BMI calculation, return the BMI back to front-end
-        aveDict = getAverage(dbd)
+        aveDict = get_average(dbd)
         return jsonify({'averages': aveDict})
     
 @bmi.route('/process',methods= ['POST'])

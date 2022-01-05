@@ -1,18 +1,18 @@
 # https://medium.com/@dmitryrastorguev/basic-user-authentication-login-for-flask-using-mongoengine-and-wtforms-922e64ef87fe
 
-from app import app, db,login_manager
-from flask import render_template, request
 from flask_login import login_required, current_user
+from flask import render_template, request
+from app import app, db,login_manager
 
 # Register Blueprint so we can factor routes
-from auth import auth
-from bmi import bmi, getDictFromCSV, storeReadings
+from bmi import bmi, get_dict_from_csv, insert_reading_data_into_database
 from dashboard import dashboard
+from auth import auth
 
 # register blueprint from respective module
+app.register_blueprint(dashboard)
 app.register_blueprint(auth)
 app.register_blueprint(bmi)
-app.register_blueprint(dashboard)
 
 from users import User
 
@@ -40,7 +40,7 @@ def upload():
             print("No create Action yet")
         elif type == 'upload':
             file = request.files.get('file')
-            listOfDict = getDictFromCSV(file)
-            storeReadings(listOfDict, db)
+            listOfDict = get_dict_from_csv(file)
+            insert_reading_data_into_database(listOfDict, db)
         return render_template("upload.html", name=current_user.name, panel="Upload")
     

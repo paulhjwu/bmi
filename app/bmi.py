@@ -202,12 +202,12 @@ def process():
     aBmi.bmi = aBmi.computeBMI(request.form['unit'])
     aBmi.save()
     
-    if request.form['unit'] == 'm':
-        bmi = weight / math.pow(height, 2)
-    else:
-        bmi = weight / math.pow(height/100, 2)
+    # if request.form['unit'] == 'm':
+    #     bmi = weight / math.pow(height, 2)
+    # else:
+    #     bmi = weight / math.pow(height/100, 2)
 
-    return jsonify({'bmi' : bmi})
+    return jsonify({'bmi' : aBmi.bmi})
 
 @bmi.route('/chart')
 def chart():

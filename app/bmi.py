@@ -151,6 +151,7 @@ def process():
 
     # Paul
     
+    #bryan
     return jsonify({'bmi' : bmiObject.bmi})
 
 @bmi.route('/chart')

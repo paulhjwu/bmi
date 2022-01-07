@@ -149,6 +149,7 @@ def process():
     bmiObject.bmi = bmiObject.computeBMI(request.form['unit'])
     bmiObject.save()
 
+    #bryan
     return jsonify({'bmi' : bmiObject.bmi})
 
 @bmi.route('/chart')

@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, request, jsonify
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 from flask_login import current_user
 from app import db, dbd
 
@@ -8,10 +8,10 @@ import io
 import math
 
 bmi = Blueprint('bmi', __name__)
-class BMI(db.Document):
-    meta = {'collection': 'readings'}
+class BMILOG(db.Document):
+    meta = {'collection': 'bmilog'}
     name = db.StringField(max_length=30)
-    date = db.DateTimeField()
+    datetime = db.DateTimeField()
     weight = db.FloatField()
     height = db.FloatField()
     bmi = db.FloatField()
@@ -23,6 +23,17 @@ class BMI(db.Document):
             bmi = self.weight / math.pow(self.height/100, 2)
         return bmi
 
+class BMIDAILY(db.Document):
+    
+    meta = {'collection': 'bmidaily'}
+    name = db.StringField(max_length=30)
+    date = db.DateTimeField()
+    numberOfMeasures = db.IntField()
+    averageBMI = db.FloatField()
+    
+    def updatedBMI(self, newBMI):
+        return (newBMI + (self.averageBMI * self.numberOfMeasures)) / (self.numberOfMeasures + 1) 
+        
 def get_dict_from_csv(file):
     data = file.read().decode('utf-8')
     dict_reader = csv.DictReader(io.StringIO(data), delimiter=',', quotechar='"')
@@ -144,15 +155,27 @@ def process():
     weight  = float(request.form['weight'])
     height = float(request.form['height'])
 
-    today = datetime.now()
-    bmiObject = BMI(name=current_user.name, date=today, weight=weight, height=height)
-    bmiObject.bmi = bmiObject.computeBMI(request.form['unit'])
-    bmiObject.save()
+    # Since there is only one reading allowed in each day, the latest will be the log
+    today = date.today()
+    now = datetime.now()
+    
+    bmilogObject = BMILOG(name=current_user.name, datetime=now, weight=weight, height=height)
+    bmilogObject.bmi = bmilogObject.computeBMI(request.form['unit'])
+    bmilogObject.save()
+    
+    bmidailyObjects = BMIDAILY.objects(name=current_user.name, date=today)
+    
+    if len(bmidailyObjects) >= 1:
+        new_bmi_average = bmidailyObjects[0].updatedBMI(bmilogObject.bmi)
+        number = bmidailyObjects[0].numberOfMeasures
+        bmidailyObjects[0].update(__raw__={'$set': {'numberOfMeasures': number + 1, 'averageBMI': new_bmi_average}})
+    else:
+        bmidailyObject = BMIDAILY(name=current_user.name, date=today, numberOfMeasures=1, averageBMI = bmilogObject.bmi)
+        bmidailyObject.save()
 
     # Paul
-    
     #bryan
-    return jsonify({'bmi' : bmiObject.bmi})
+    return jsonify({'bmi' : bmilogObject.bmi})
 
 @bmi.route('/chart')
 def chart():

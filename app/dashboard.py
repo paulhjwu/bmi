@@ -92,7 +92,7 @@ class CHART(db.Document):
         sum=0
         count=0
         # resCursor = db.readings.find({})  
-        readings = self["readings"]
+        readings = self.readings
         
         for key, values in readings.items():
             for value in values:

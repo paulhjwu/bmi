@@ -2,11 +2,12 @@
 
 from flask_login import login_required, current_user
 from flask import render_template, request
-from app import app, db,login_manager
+from app import app, db, login_manager
 
 # Register Blueprint so we can factor routes
-from bmi import bmi, get_dict_from_csv, insert_reading_data_into_database
-from dashboard import dashboard
+# from bmi import bmi, get_dict_from_csv, insert_reading_data_into_database
+from bmi import bmi
+from dashboard import dashboard, CHART
 from auth import auth
 
 # register blueprint from respective module
@@ -40,7 +41,8 @@ def upload():
             print("No create Action yet")
         elif type == 'upload':
             file = request.files.get('file')
-            listOfDict = get_dict_from_csv(file)
-            insert_reading_data_into_database(listOfDict, db)
+            a_chart = CHART(fdate=None, ldate=None, readings=None).save()
+            listOfDict = a_chart.get_dict_from_csv(file)
+            a_chart.insert_reading_data_into_database(listOfDict)
         return render_template("upload.html", name=current_user.name, panel="Upload")
     

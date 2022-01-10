@@ -4,9 +4,16 @@
     <div class="card-header">
         <h1>Dashboard</h1>
     </div>
-    <div class="card-body"
+    <div class="card-body">
         <p>You are currently logged in as {{ name }}</p>
-        <a href='logout'>Logout</a>
+        <!-- <a href='logout'>Logout</a> -->
+        <div class="linkChart">
+            <ul>
+                <li>Frontend Chart: <a href="/chart">Click to BMI Chart (Frontend)</a></li>
+                <li>Backend Chart: <a href="/chart2">Click to BMI Chart (Backend)</a> </li>
+                <li>Average Chart: <a href="/chart3">Click to Average BMI Chart (Backend)</li>
+            </ul>
+        </div>    
     </div>
 {% endblock %}
 </body>

@@ -12,14 +12,12 @@ def create_app():
     }
     app.static_folder = 'assets'
     db = MongoEngine(app)
-    # init SQLAlchemy so we can use it later in our models
-    connection = pymongo.MongoClient('mongodb://localhost:27017')
-    dbd = connection['bmi']
+
     app.config['SECRET_KEY'] = '9OLWxND4o83j4K4iuopO'
     login_manager = LoginManager()
     login_manager.init_app(app)
     login_manager.login_view = 'login'
-    return app, db, dbd, login_manager
+    return app, db, login_manager
 
-app, db, dbd, login_manager = create_app()
+app, db, login_manager = create_app()
 

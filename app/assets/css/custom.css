@@ -8,7 +8,7 @@ body {
 /* navbar */
 .sidebar {
     height: 100vh;
-    background: linear-gradient(rgba(70, 64, 156, 0.548), rgba(0, 0, 0, .9)), url(images/img1.jpeg);
+    background: linear-gradient(rgba(70, 64, 156, 0.548), rgba(0, 0, 0, .9)), url(../img/img1.jpeg);
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
@@ -91,7 +91,7 @@ body {
 
 .top-navbar {
     position: static;
-    background: linear-gradient(rgba(167, 165, 202, 0.548), rgba(53, 27, 87, 0.377)), url(images/img1.jpeg);
+    background: linear-gradient(rgba(167, 165, 202, 0.548), rgba(53, 27, 87, 0.377)), url(../img/img1.jpeg);
 }
 
 /* end of navbar */

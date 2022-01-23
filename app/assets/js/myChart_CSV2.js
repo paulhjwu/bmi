@@ -42,7 +42,8 @@ $.ajax({
       datasets: []
       },
       options: {
-          responsive: false
+          responsive: true,
+          maintainaspectratio: false
       }
     });
 

@@ -132,7 +132,8 @@ d3.csv(f,
       datasets: []
       },
       options: {
-          responsive: false
+          responsive: true,
+          maintainaspectratio: false 
       }
     });
 

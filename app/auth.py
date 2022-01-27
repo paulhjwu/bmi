@@ -1,6 +1,6 @@
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import login_user, login_required, logout_user, current_user
-from flask import Blueprint, request, redirect, render_template, url_for
+from flask import Blueprint, request, redirect, render_template, url_for, flash
 from forms import RegForm
 from users import User
 
@@ -19,13 +19,15 @@ def register():
                 return redirect(url_for('dashboard.render_dashboard'))
             else:
                 form.email.errors.append("User already existed")
+                render_template('register.html', form=form, panel="Register")    
+            
     return render_template('register.html', form=form, panel="Register")
 
 @auth.route('/login', methods=['GET', 'POST'])
 @auth.route('/')
 def login():
-    if current_user.is_authenticated == True:
-        return redirect(url_for('dashboard.render_dashboard'))
+    # if current_user.is_authenticated == True:
+    #     return redirect(url_for('dashboard.render_dashboard'))
     form = RegForm()
     if request.method == 'POST':
         print(request.form.get('checkbox'))

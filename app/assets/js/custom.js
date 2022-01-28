@@ -100,5 +100,9 @@ function clear(){
    }
 }
 
-document.querySelector("#bmi").addEventListener("click", bmi);
-document.querySelector("#clear").addEventListener("click", clear);
+if(document.getElementById("bmi") != null){
+    document.querySelector("#bmi").addEventListener("click", bmi);
+}
+if(document.getElementById("clear") != null){
+    document.querySelector("#clear").addEventListener("click", clear);
+}

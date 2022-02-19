@@ -6,6 +6,9 @@ from app import db
 import csv
 import io
 
+from bmi import BMIDAILY
+from users import User
+
 dashboard = Blueprint('dashboard', __name__)
 
 class CHART(db.Document):  
@@ -21,7 +24,7 @@ class CHART(db.Document):
         file.close()
         return(list(dict_reader))
 
-    def insert_reading_data_into_database(self, data):
+    def insert_reading_data_into_database(self,data):
 
         readings = {}
         # fDate = datetime(3000, 1, 1)
@@ -30,9 +33,9 @@ class CHART(db.Document):
         lDate = datetime(2000, 12, 31)
 
         for item in data:
-            parts = [int(x) for x in item['Date'].split('-')]
+            # parts = [int(x) for x in item['Date'].split('-')]
             # myDate = datetime(parts[0], parts[1], parts[2])
-            myDate = datetime(parts[0], parts[1], parts[2])
+            myDate = item['Date']
 
             if myDate <= fDate:
                 fDate = myDate
@@ -73,8 +76,10 @@ class CHART(db.Document):
                 filled = False
 
                 for item in values:
-                    parts=[ int(x) for x in item[0].split('-') ]
-                    mydate = datetime(parts[0], parts[1], parts[2]) 
+                    # parts=[ int(x) for x in item[0].split('-') ]
+                    # mydate = datetime(parts[0], parts[1], parts[2]) 
+                    
+                    mydate = item[0]
                     
                     if mydate == start_date:
                         chartDim[key].append(item[1])
@@ -105,7 +110,7 @@ class CHART(db.Document):
             aveDict[key]=sum/count
 
         return aveDict
-
+    
 # it is possible to use pluggable view
 @dashboard.route('/chart2', methods=['GET', 'POST'])
 def chart2():
@@ -113,10 +118,28 @@ def chart2():
             #I want to get some data from the service
         return render_template('bmi_chart2.html', name=current_user.name, panel="BMI Chart")    #do nothing but to show index.html
     elif request.method == 'POST':
-        #Chart is indexed by first date and last date
-        #And we are going to plot the period from 2021-01-17 to 2021-01-23
+
+        # To populate the CHART database first using BMIDAILY database
+        listOfDict=[]      
+        
         fDate = datetime(2021,1,17,0,0)
         lDate = datetime(2021,1,23,0,0) 
+        #Chart is indexed by first date and last date
+        #And we are going to plot the pre-set fixed period from 2021-01-17 to 2021-01-23
+        #As DataSet2.csv has this range
+        
+        CHART.objects(fdate=fDate, ldate=lDate).delete()
+                         
+        for item in BMIDAILY.objects():
+            #existing_user = User.objects(email=item['User_email']).first()
+            measure_date=item['date']
+            if fDate <= measure_date <= lDate:
+                bmi=item['averageBMI']
+                listOfDict.append({'Date': measure_date, 'User': item.user.name, 'BMI':bmi})
+        
+        a_chart = CHART(fdate=None, ldate=None, readings=None).save()
+        a_chart.insert_reading_data_into_database(listOfDict)
+        
         chartobjects=CHART.objects(fdate=fDate, ldate=lDate)
         
         if len(chartobjects) >= 1:

@@ -6,11 +6,13 @@ from app import db
 import csv
 import io
 import math
+from users import User
 
 bmi = Blueprint('bmi', __name__)
+
 class BMILOG(db.Document):
     meta = {'collection': 'bmilog'}
-    name = db.StringField(max_length=30)
+    user = db.ReferenceField(User)
     datetime = db.DateTimeField()
     weight = db.FloatField()
     height = db.FloatField()
@@ -26,7 +28,7 @@ class BMILOG(db.Document):
 class BMIDAILY(db.Document):
     
     meta = {'collection': 'bmidaily'}
-    name = db.StringField(max_length=30)
+    user = db.ReferenceField(User)
     date = db.DateTimeField()
     numberOfMeasures = db.IntField()
     averageBMI = db.FloatField()
@@ -34,7 +36,7 @@ class BMIDAILY(db.Document):
     def updatedBMI(self, newBMI):
         return (newBMI + (self.averageBMI * self.numberOfMeasures)) / (self.numberOfMeasures + 1) 
 
- 
+# This controls controls the Ajax call to log a BMI 
 @bmi.route('/process',methods= ['POST'])
 def process():
     weight  = float(request.form['weight'])
@@ -44,20 +46,23 @@ def process():
     today = date.today()
     now = datetime.now()
     
-    bmilogObject = BMILOG(name=current_user.name, datetime=now, weight=weight, height=height)
-    bmilogObject.bmi = bmilogObject.computeBMI(request.form['unit'])
-    bmilogObject.save()
+    existing_user = User.objects(email=current_user.email).first()
     
-    bmidailyObjects = BMIDAILY.objects(name=current_user.name, date=today)
-    
-    if len(bmidailyObjects) >= 1:
-        new_bmi_average = bmidailyObjects[0].updatedBMI(bmilogObject.bmi)
-        number = bmidailyObjects[0].numberOfMeasures
-        bmidailyObjects[0].update(__raw__={'$set': {'numberOfMeasures': number + 1, 'averageBMI': new_bmi_average}})
-    else:
-        bmidailyObject = BMIDAILY(name=current_user.name, date=today, numberOfMeasures=1, averageBMI = bmilogObject.bmi)
-        bmidailyObject.save()
-
+    if existing_user:
+        bmilogObject = BMILOG(user=existing_user, datetime=now, weight=weight, height=height)
+        bmilogObject.bmi = bmilogObject.computeBMI(request.form['unit'])
+        bmilogObject.save()
+        
+        bmidailyObjects = BMIDAILY.objects(user=existing_user, date=today)
+        
+        if len(bmidailyObjects) >= 1:
+            new_bmi_average = bmidailyObjects[0].updatedBMI(bmilogObject.bmi)
+            number = bmidailyObjects[0].numberOfMeasures
+            bmidailyObjects[0].update(__raw__={'$set': {'numberOfMeasures': number + 1, 'averageBMI': new_bmi_average}})
+        else:
+            bmidailyObject = BMIDAILY(user=existing_user, date=today, numberOfMeasures=1, averageBMI = bmilogObject.bmi)
+            bmidailyObject.save()
+            
     # Paul
     #bryan
     return jsonify({'bmi' : bmilogObject.bmi})

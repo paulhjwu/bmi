@@ -23,8 +23,8 @@ $.ajax({
 
     var myChart = new Chart(ctx, {
       data: {
-      labels: vLabels,
-      datasets: []
+        labels: vLabels,
+        datasets: []
       },
       options: {
           responsive: false

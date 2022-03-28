@@ -8,6 +8,10 @@ function getReadings(data) {
 
   debugger
 
+  /* Prepare the data from the csv format of [email,date,#measure,AveBMI] 
+     to a dictionary of { name_of_user (based on email): [[date1, AveBMI1],[date2, AveBMI2], ...]}
+     and the first date and the last date of measure, fDate and lDate, respectively
+  */
   var readings = {};
   var bDate = new Date(3000, 0, 1);
   var lDate = new Date(2000, 11, 31);
@@ -30,6 +34,15 @@ function getReadings(data) {
     } else {
         readings[data[i].group]=[[data[i].date, data[i].value]];
     }
+
+    // for key, values in readings.items():
+    //         readings[key]=sorted(values)
+
+    // Make sure the X-Axis is in ascending order for each label
+
+    for (const [ key, value ] of Object.entries(readings)) {
+      readings[key]=value.sort()
+    }
     
   }
 
@@ -44,6 +57,12 @@ function dataPrep(readings, bDate, lDate) {
   var chartDim = {};
   var labels = [];
 
+  /*
+    dataPrep further prepare a dictionary of {Person, [[date1, reading1], [date2, reading2], ...]}
+    into the sub-chart for each Person, which becomes a distinct label
+    and X-Axis, Y-Axis for each reading (date, value), including all date points. 
+    required for ChartJS
+  */
   for (var d = bDate; d <= lDate; d.setDate(d.getDate() + 1)) {
 
       var month = d.getUTCMonth() + 1; //months from 1-12

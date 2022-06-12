@@ -1,4 +1,4 @@
-User,Date,Num,BMI
+User_email,Date,Num,BMI
 Peter Oh,2021-01-17,1,25.6
 Peter Oh,2021-01-18,2,26.6
 Peter Oh,2021-01-20,3,24.6

@@ -1,6 +1,9 @@
 # BMI
 
-This is a example flask app for ICT 239 - web programming for SUSS.
+This is an example flask app for ICT 239 - web programming for SUSS.
+# Student Details
+Student Name: 
+Student ID: 
 
 # Getting started
 ```

@@ -1,8 +1,9 @@
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import login_user, login_required, logout_user, current_user
 from flask import Blueprint, request, redirect, render_template, url_for, flash
-from forms import RegForm
-from users import User
+# from forms import RegForm
+from models.forms import RegForm
+from models.users import User
 
 auth = Blueprint('auth', __name__)
 
@@ -29,7 +30,10 @@ def login():
     # if current_user.is_authenticated == True:
     #     return redirect(url_for('dashboard.render_dashboard'))
     form = RegForm()
+    print("IT REACHes HEREEEEEEEEEEEE first")
+
     if request.method == 'POST':
+        print("IT REACH HEREEEEEEEEEEEE")
         print(request.form.get('checkbox'))
         if form.validate():
             check_user = User.objects(email=form.email.data).first()
@@ -37,10 +41,13 @@ def login():
                 if check_password_hash(check_user['password'], form.password.data):
                     login_user(check_user)
                     return redirect(url_for('dashboard.render_dashboard'))
+                    #return redirect(url_for('dashboard'))
                 else:
                     form.password.errors.append("User Password Not Correct")
             else:
                 form.email.errors.append("No Such User")
+
+
     return render_template('login.html', form=form, panel="Login")
 
 @auth.route('/logout', methods = ['GET'])

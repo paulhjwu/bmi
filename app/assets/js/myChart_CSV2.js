@@ -11,7 +11,8 @@ $.ajax({
   url:"/chart2",
   type:"POST",
   data: {},
-  error: function() {
+  error: function(error) {
+    console.log(error)
       alert("Error");
   },
   success: function(data, status, xhr) {

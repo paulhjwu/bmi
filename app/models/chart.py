@@ -1,8 +1,8 @@
-from models.users import User
+# from models.users import User
 from app import db
+from datetime import datetime, timedelta, date
 
 class CHART(db.Document):  
-    
     meta = {'collection': 'chart'}
     fdate = db.DateTimeField()
     ldate = db.DateTimeField()
@@ -15,31 +15,23 @@ class CHART(db.Document):
         return(list(dict_reader))
 
     def insert_reading_data_into_database(self,data):
-
         readings = {}
-        # fDate = datetime(3000, 1, 1)
-        # lDate = datetime(2000, 12, 31)
-        fDate = datetime(3000, 1, 1)
-        lDate = datetime(2000, 12, 31)
-
+        fDate = datetime(2021,1,17,0,0)
+        lDate = datetime(2021,1,23,0,0) 
+        
         for item in data:
-            # parts = [int(x) for x in item['Date'].split('-')]
-            # myDate = datetime(parts[0], parts[1], parts[2])
             myDate = item['Date']
-
             if myDate <= fDate:
                 fDate = myDate
 
             if myDate >= lDate:
                 lDate = myDate
             
-            # BMI(name=item['User'], date=myDate, bmi=item['BMI']).save()
             if readings.get(item['User']):
                 readings[item['User']].append([item['Date'], item['BMI']])            
             else:
                 readings[item['User']] = [[item['Date'], item['BMI']]]
             
-        # dbd.readings.insert_one({"readings": readings, "fDate": fDate, "lDate": lDate})
         self.update(__raw__={'$set': {'readings': readings,'fdate': fDate, 'ldate': lDate}})
         
     def prepare_chart_dimension_and_label(self):
@@ -66,15 +58,10 @@ class CHART(db.Document):
                 filled = False
 
                 for item in values:
-                    # parts=[ int(x) for x in item[0].split('-') ]
-                    # mydate = datetime(parts[0], parts[1], parts[2]) 
-                    
                     mydate = item[0]
-                    
                     if mydate == start_date:
                         chartDim[key].append(item[1])
                         filled = True
-
                     else:
                         if mydate > start_date:
                             if not filled:
@@ -89,9 +76,7 @@ class CHART(db.Document):
         aveDict = {}
         sum=0
         count=0
-        # resCursor = db.readings.find({})  
-        readings = self.readings
-        
+        readings = self.readings        
         for key, values in readings.items():
             for value in values:
                 sum += float(value[1])

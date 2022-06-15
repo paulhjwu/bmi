@@ -6,16 +6,18 @@ import pymongo
 
 def create_app():
     app = Flask(__name__)
-    # app = Flask(__name__, template_folder="views")
-
     app.config['MONGODB_SETTINGS'] = {
         'db':'db_name',
         'host':'localhost'
     }
+    
+    # THREE different ways to change `templates` folder to be called `views`
+    # app = Flask(__name__, template_folder="views")
     # app.template_folder = 'views'
+    # app.config['TEMPLATE_FOLDER'] = "views"
+
     app.static_folder = 'assets'
     db = MongoEngine(app)
-    # app.config['TEMPLATE_FOLDER'] = "views"
     app.config['SECRET_KEY'] = '9OLWxND4o83j4K4iuopO'
     login_manager = LoginManager()
     login_manager.init_app(app)

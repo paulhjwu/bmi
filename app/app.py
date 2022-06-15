@@ -1,9 +1,14 @@
 # https://medium.com/@dmitryrastorguev/basic-user-authentication-login-for-flask-using-mongoengine-and-wtforms-922e64ef87fe
 
-from flask_login import login_required, current_user
 from flask import render_template, request
-from app import app, db, login_manager
+from flask_login import login_required, current_user
+from initialise import app, db, login_manager
 
+from models.chart import CHART
+from models.bmidaily import BMIDAILY
+from models.users import User
+import csv
+import io
 # Register Blueprint so we can factor routes
 # from bmi import bmi, get_dict_from_csv, insert_reading_data_into_database
 from controllers.bmi import bmi
@@ -16,13 +21,7 @@ app.register_blueprint(dashboard)
 app.register_blueprint(auth)
 app.register_blueprint(bmi)
 
-from models.chart import CHART
-from models.bmidaily import BMIDAILY
-from models.users import User
-import csv
-import io
-
-# Load the current user if any
+# Load the current user if there is any
 @login_manager.user_loader
 def load_user(user_id):
     return User.objects(pk=user_id).first()
@@ -38,11 +37,10 @@ def log():
 @app.route("/upload", methods=['GET','POST'])
 @login_required
 def upload():
-    # if hte user just key in the /upload in the address
+    # if the user just key in the /upload in the address
     if request.method == 'GET':
         return render_template("upload.html", name=current_user.name, panel="Upload")
     elif request.method == 'POST':
-        
         type = request.form.get('type')
         file = request.files.get('file')                    
         data = file.read().decode('utf-8')
@@ -54,7 +52,7 @@ def upload():
         elif type == 'upload':
             
             for item in list(dict_reader):
-                existing_user = User.objects(email=item['User_email']).first()
+                existing_user = User.objects(email=item['User']).first()
                 if existing_user:
                     measure_date=item['Date']
                     num_of_measure=item['Num']

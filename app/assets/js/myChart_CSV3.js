@@ -5,6 +5,8 @@ $.ajax({
   type:"POST",
   data: {},
   error: function() {
+      console.log("hello")  
+      // console.log(error)
       alert("Error");
   },
 

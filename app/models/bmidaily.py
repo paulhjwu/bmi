@@ -3,7 +3,6 @@ from models.users import User
 
 # class Bmi_Measurement(db_Document):
 class BMIDAILY(db.Document):
-    
     meta = {'collection': 'bmidaily'}
     user = db.ReferenceField(User)
     date = db.DateTimeField()

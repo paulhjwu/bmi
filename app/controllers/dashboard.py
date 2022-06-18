@@ -17,11 +17,25 @@ def chart2():
             #I want to get some data from the service
         return render_template('bmi_chart2.html', name=current_user.name, panel="BMI Chart")    #do nothing but to show index.html
     elif request.method == 'POST':
+        
+        # To populate the CHART database first using BMIDAILY database
+        listOfDict=[]  
+            
         #Chart is indexed by first date and last date
         #And we are going to plot the period from 2021-01-17 to 2021-01-23
         fDate = datetime(2021,1,17,0,0)
         lDate = datetime(2021,1,23,0,0) 
         chartobjects=CHART.objects(fdate=fDate, ldate=lDate)
+        
+        for item in BMIDAILY.objects():
+            #existing_user = User.objects(email=item['User_email']).first()
+            measure_date=item['date']
+            if fDate <= measure_date <= lDate:
+                bmi=item['averageBMI']
+                listOfDict.append({'Date': measure_date, 'User': item.user.name, 'BMI':bmi})
+        
+        a_chart = CHART(fdate=None, ldate=None, readings=None).save()
+        a_chart.insert_reading_data_into_database(listOfDict)
         
         if len(chartobjects) >= 1:
             
@@ -92,7 +106,9 @@ def chart3():
     if request.method == 'GET':
         #I want to get some data from the service
         return render_template('bmi_chart3.html', name=current_user.name, panel="BMI Chart")    #do nothing but to show index.html
+    
     elif request.method == 'POST':
+    
         #Get the values passed from the Front-end, do the BMI calculation, return the BMI back to front-end
         fDate = datetime(2021,1,17,0,0)
         lDate = datetime(2021,1,23,0,0) 

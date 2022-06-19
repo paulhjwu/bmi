@@ -3,6 +3,7 @@ from datetime import datetime, timedelta, date
 from flask_login import current_user
 from models.bmidaily import BMIDAILY
 from models.bmilog import BMILOG
+from models.users import User
 
 import csv
 import io

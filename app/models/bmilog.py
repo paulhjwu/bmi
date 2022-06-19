@@ -1,6 +1,8 @@
 from app import db
 from models.users import User
 
+import math
+
 class BMILOG(db.Document):
     meta = {'collection': 'bmilog'}
     user = db.ReferenceField(User)
